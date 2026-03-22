@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ["8.2", "8.3", "8.4"]
+        laravel: ["10", "11", "12"]
+        exclude:
+          - php: "8.4"
+            laravel: "10"
+
+    name: PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          coverage: none
+          extensions: mbstring, sqlite, pdo_sqlite
+
+      - name: Validate composer
+        run: composer validate --strict
+
+      - name: Install dependencies for selected Laravel version
+        run: >-
+          composer update --prefer-dist --no-interaction --no-progress
+          --with "illuminate/http:^${{ matrix.laravel }}.0"
+          --with "illuminate/routing:^${{ matrix.laravel }}.0"
+          --with "illuminate/session:^${{ matrix.laravel }}.0"
+          --with "illuminate/support:^${{ matrix.laravel }}.0"
+          --with "illuminate/view:^${{ matrix.laravel }}.0"
+          --with "illuminate/database:^${{ matrix.laravel }}.0"
+
+      - name: Run tests
+        run: vendor/bin/phpunit

@@ -32,10 +32,10 @@ class HtmlBuilder
     /**
      * Create a new HTML builder instance.
      *
-     * @param \Illuminate\Contracts\Routing\UrlGenerator $url
+     * @param \Illuminate\Contracts\Routing\UrlGenerator|null $url
      * @param \Illuminate\Contracts\View\Factory         $view
      */
-    public function __construct(UrlGenerator $url = null, Factory $view)
+    public function __construct(?UrlGenerator $url, Factory $view)
     {
         $this->url = $url;
         $this->view = $view;

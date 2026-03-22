@@ -716,9 +716,26 @@ class FormBuilder
     public function selectMonth($name, $selected = null, $options = [], $format = '%B')
     {
         $months = [];
+        $dateFormats = [
+            '%B' => 'F',
+            '%b' => 'M',
+            '%m' => 'm',
+        ];
 
         foreach (range(1, 12) as $month) {
-            $months[$month] = strftime($format, mktime(0, 0, 0, $month, 1));
+            $date = DateTime::createFromFormat('!m', (string) $month);
+            if ($date === false) {
+                continue;
+            }
+
+            if (isset($dateFormats[$format])) {
+                $months[$month] = $date->format($dateFormats[$format]);
+                continue;
+            }
+
+            $months[$month] = strpos($format, '%') === false
+                ? $date->format($format)
+                : $date->format($dateFormats['%B']);
         }
 
         return $this->select($name, $months, $selected, $options);
