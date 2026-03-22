@@ -14,6 +14,12 @@ use Mockery as m;
 
 class FormBuilderTest extends PHPUnit\Framework\TestCase
 {
+    protected $urlGenerator;
+
+    protected $viewFactory;
+
+    protected $htmlBuilder;
+
     /**
      * @var FormBuilder
      */
